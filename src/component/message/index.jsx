@@ -1,0 +1,63 @@
+import React, {useState} from 'react';
+import PropTypes from 'prop-types';
+import {Comment, Icon, Button, Label} from 'semantic-ui-react'
+import styles from './styles.module.scss';
+
+const UserMesage = ({userName, imgSrc, text, id, date, canEdit, like, setLike}) => {
+    const [edit, setEdit] = useState(false);
+    const handleEdit = () => {
+        setEdit(true)
+    }
+    return (
+        <div className={styles.userMessageWrap}>
+            <div className={styles.messageWrap}>
+                {
+                    edit
+                        ? <h1>1</h1>
+                        : (
+                            <Comment>
+                                <Comment.Avatar src={imgSrc} className={styles.comment}/>
+                                <Comment.Content>
+                                    <Comment.Author as='a'>{userName}</Comment.Author>
+                                    <Comment.Metadata>
+                                        <div>{date}</div>
+                                    </Comment.Metadata>
+                                    <Comment.Text>{text}</Comment.Text>
+                                    <Comment.Actions>
+                                        <Comment.Action>
+                                            <Label onClick={() => {
+                                                setLike(id)
+                                            }}>
+                                                <Icon name='heart' color='red'/> {like}
+                                            </Label>
+                                        </Comment.Action>
+                                        <Comment.Action>
+                                            {canEdit
+                                                ? (<Button icon size='mini' onClick={handleEdit}>
+                                                    <Icon name='edit'/>
+                                                </Button>)
+                                                : null
+                                            }
+                                        </Comment.Action>
+                                    </Comment.Actions>
+                                </Comment.Content>
+                            </Comment>
+                        )
+                }
+
+            </div>
+        </div>
+    );
+}
+
+UserMesage.propTypes = {
+    userName: PropTypes.string.isRequired,
+    imgSrc: PropTypes.string.isRequired,
+    text: PropTypes.string.isRequired,
+    id: PropTypes.string.isRequired,
+    canEdit: PropTypes.bool.isRequired,
+    like: PropTypes.number.isRequired,
+    setLike: PropTypes.func.isRequired
+};
+
+export default UserMesage;
