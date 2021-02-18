@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import { Form, TextArea, Button } from 'semantic-ui-react'
+import { Form, Button } from 'semantic-ui-react';
 import styles from './styles.module.scss';
 
 const UserInput = ({postMessage}) => {
@@ -11,17 +11,14 @@ const UserInput = ({postMessage}) => {
         setText('');
     }
     return (
-        <form onSubmit={handleChange}>
-            <textarea
+        <Form reply onSubmit={handleChange} className={styles.form}>
+            <Form.TextArea
                 value={text}
-                name=""
-                id=""
-                cols="30"
-                rows="10"
+                placeholder="Type a comment..."
                 onChange={ev => setText(ev.target.value)}
-            ></textarea>
-            <Button color='green' type="submit">Green</Button>
-        </form>
+            />
+            <Button type="submit" content="Post" labelPosition="left" icon="edit" primary />
+        </Form>
     );
 };
 

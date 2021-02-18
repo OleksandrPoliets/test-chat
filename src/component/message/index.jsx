@@ -1,54 +1,64 @@
-import React, {useState} from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
-import {Comment, Icon, Button, Label} from 'semantic-ui-react'
+import {Comment, Icon, Button, Label} from 'semantic-ui-react';
 import styles from './styles.module.scss';
 
-const UserMesage = ({userName, imgSrc, text, id, date, canEdit, like, setLike}) => {
-    const [edit, setEdit] = useState(false);
-    const handleEdit = () => {
-        setEdit(true)
-    }
-    return (
-        <div className={styles.userMessageWrap}>
-            <div className={styles.messageWrap}>
-                {
-                    edit
-                        ? <h1>1</h1>
-                        : (
-                            <Comment>
-                                <Comment.Avatar src={imgSrc} className={styles.comment}/>
-                                <Comment.Content>
-                                    <Comment.Author as='a'>{userName}</Comment.Author>
-                                    <Comment.Metadata>
-                                        <div>{date}</div>
-                                    </Comment.Metadata>
-                                    <Comment.Text>{text}</Comment.Text>
-                                    <Comment.Actions>
-                                        <Comment.Action>
-                                            <Label onClick={() => {
-                                                setLike(id)
-                                            }}>
-                                                <Icon name='heart' color='red'/> {like}
-                                            </Label>
-                                        </Comment.Action>
-                                        <Comment.Action>
-                                            {canEdit
-                                                ? (<Button icon size='mini' onClick={handleEdit}>
-                                                    <Icon name='edit'/>
-                                                </Button>)
-                                                : null
-                                            }
-                                        </Comment.Action>
-                                    </Comment.Actions>
-                                </Comment.Content>
-                            </Comment>
-                        )
-                }
+const UserMesage = ({
+    userName,
+    imgSrc,
+    text,
+    id,
+    date,
+    canEdit,
+    like,
+    setLike,
+    onEdit,
+    deleteOwnMesage
+}) => (
+    <div className={styles.userMessageWrap} style={canEdit ? {justifyContent: 'flex-end'} : null}>
+        <div className={styles.messageWrap}>
 
-            </div>
+            <Comment>
+                <Comment.Avatar src={imgSrc} className={styles.comment}/>
+                <Comment.Content>
+                    <Comment.Author as='a'>{userName}</Comment.Author>
+                    <Comment.Metadata>
+                        <div>{date}</div>
+                    </Comment.Metadata>
+                    <Comment.Text>{text}</Comment.Text>
+                    <Comment.Actions>
+                        <Comment.Action>
+                            <Label onClick={() => {
+                                setLike(id)
+                            }}>
+                                <Icon name='heart' color='red'/> {like}
+                            </Label>
+                        </Comment.Action>
+                        <Comment.Action>
+                            {canEdit
+                                ? (
+                                    <>
+                                        <Button icon size='mini' onClick={() => {
+                                            onEdit(id)
+                                        }}>
+                                            <Icon name='edit'/>
+                                        </Button>
+                                        <Button icon size='mini' onClick={() => {
+                                            deleteOwnMesage(id)
+                                        }}>
+                                            <Icon name='trash alternate'/>
+                                        </Button>
+                                    </>
+                                )
+                                : null
+                            }
+                        </Comment.Action>
+                    </Comment.Actions>
+                </Comment.Content>
+            </Comment>
         </div>
-    );
-}
+    </div>
+);
 
 UserMesage.propTypes = {
     userName: PropTypes.string.isRequired,
@@ -57,7 +67,9 @@ UserMesage.propTypes = {
     id: PropTypes.string.isRequired,
     canEdit: PropTypes.bool.isRequired,
     like: PropTypes.number.isRequired,
-    setLike: PropTypes.func.isRequired
+    setLike: PropTypes.func.isRequired,
+    onEdit: PropTypes.func.isRequired,
+    deleteOwnMesage: PropTypes.func.isRequired
 };
 
 export default UserMesage;

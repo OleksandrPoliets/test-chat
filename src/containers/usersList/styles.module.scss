@@ -1,6 +1,7 @@
 .list{
-  border-left: 1px solid silver;
-  margin: 0 !important;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
   width: 20%;
 }
 

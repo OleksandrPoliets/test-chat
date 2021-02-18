@@ -1,16 +1,21 @@
 import React, {useState, useEffect} from 'react';
 import axios from "axios";
 import PropTypes from 'prop-types';
-import {Loader, Dimmer, List} from 'semantic-ui-react'
+import {Loader, Dimmer} from 'semantic-ui-react';
 import ChatHeader from "../../component/chatHeader";
 import UsersList from "../usersList";
 import UserInput from "../../component/userInput";
 import MesagesContainer from "../messagesContainer";
+import EditedModal from "../../component/editedModal/editedModal";
 import styles from './styles.module.scss';
 
 
-const Chat = ({userInfo}) => {
-    const apiUrl = 'https://edikdolynskyi.github.io/react_sources/messages.json';
+const Chat = ({userInfo, apiAddres}) => {
+    const [edit, setEdit] = useState({
+        editedPostId: '',
+        isEdit: false,
+        ediedText: ''
+    });
     const [chatState, setChatState] = useState({
         message: [],
         users: [],
@@ -18,13 +23,13 @@ const Chat = ({userInfo}) => {
         loading: true
     });
     useEffect(async () => {
-        const {data} = await axios.get(apiUrl);
+        const {data} = await axios.get(apiAddres);
         const tempData = data.map(el => {
             return {
                 ...el,
                 likers: []
             }
-        })
+        });
         const lastMessageTime = tempData[tempData.length - 1].createdAt
         setChatState({
             message: [...tempData],
@@ -35,7 +40,7 @@ const Chat = ({userInfo}) => {
     }, [setChatState]);
 
     const countMembers = data => {
-        const tempArr = []
+        const tempArr = [];
         data.map(el => {
             const {userId, avatar, user} = el;
             if (tempArr.length === 0) {
@@ -73,8 +78,8 @@ const Chat = ({userInfo}) => {
 
     const handlePost = data => {
         const date = new Date().toISOString();
-        console.log(date)
         const tempMessage = [...chatState.message];
+
         tempMessage.push({
             id: Date.now().toString(),
             userId: userInfo.userId,
@@ -84,14 +89,67 @@ const Chat = ({userInfo}) => {
             text: data,
             createdAt: date,
             editedAt: ""
-        })
+        });
+
         setChatState({
             message: [...tempMessage],
             users: [...chatState.users],
             lastMessageTime: date,
             loading: false
         });
-    }
+
+    };
+
+    const hanndleEddit = id => {
+        const editedMessage = chatState.message.find(el => el.id === id);
+        setEdit({
+            editedPostId: id,
+            isEdit: true,
+            ediedText: editedMessage.text
+        });
+    };
+
+    const closeEditor = () => {
+        setEdit({
+            editedPostId: '',
+            isEdit: false,
+            ediedText: ''
+        })
+    };
+
+    const deleteMessage = id => {
+        const tempMessage = chatState.message.filter(el => el.id !== id);
+        const date = tempMessage[tempMessage.length - 1].createdAt;
+
+        setChatState({
+            message: [...tempMessage],
+            users: [...chatState.users],
+            lastMessageTime: date,
+            loading: false
+        });
+    };
+
+    const editPost = text => {
+        const date = new Date().toISOString();
+        const tempMessage = chatState.message.map(el => {
+            if (el.id === edit.editedPostId) {
+                return {
+                    ...el,
+                    text,
+                    editedAt: date
+                }
+            } else {
+                return el;
+            }
+        });
+        setChatState({
+            message: [...tempMessage],
+            users: [...chatState.users],
+            lastMessageTime: chatState.lastMessageTime,
+            loading: false
+        });
+        closeEditor();
+    };
 
     return (
         <main className={styles.main}>
@@ -112,30 +170,35 @@ const Chat = ({userInfo}) => {
                         <div className={styles.chatWrap}>
                             <div className={styles.messageWrap}>
                                 <MesagesContainer
+                                    onEdit={hanndleEddit}
                                     messages={chatState.message}
                                     carentUser={userInfo.userId}
                                     setLike={handleLike}
+                                    deleteOwnMesage={deleteMessage}
                                 />
-                                <UserInput
-                                    postMessage={handlePost}
-                                />
+                                <UserInput postMessage={handlePost}/>
                             </div>
                             <UsersList
                                 users={chatState.users}
                             />
                         </div>
-
+                        {edit.isEdit && (
+                            <EditedModal
+                                isEdit={edit.isEdit}
+                                message={edit.ediedText}
+                                cancelEdit={closeEditor}
+                                saveChange={editPost}
+                            />
+                            )}
                     </>
-
-
                 )}
-
         </main>
     );
 };
 
 Chat.propTypes = {
-    userInfo: PropTypes.object.isRequired
+    userInfo: PropTypes.object.isRequired,
+    apiAddres: PropTypes.string.isRequired
 };
 
 export default Chat;

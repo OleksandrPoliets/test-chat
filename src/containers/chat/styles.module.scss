@@ -1,6 +1,6 @@
-.main{
-  width: 80%;
-  height: 100%;
+.main{width: 80%;
+  height: 83%;
+  flex-grow: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -10,8 +10,8 @@
 }
 
 .chatWrap {
-  width: 100%;
-  height: 100%;
+  height: 87%;
+  width: 95%;
   display: flex;
   flex-direction: row;
 }

@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { List } from 'semantic-ui-react'
+import {List} from 'semantic-ui-react';
 import UserListItem from "../../component/userListItem";
 import styles from './styles.module.scss';
 
